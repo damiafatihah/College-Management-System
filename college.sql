@@ -601,3 +601,17 @@ INSERT INTO STALL(stall_id, manager_id, vendor_id, name, stall_size, type, renta
 -- Table 25 - SHOP
 INSERT INTO SHOP(stall_id, manager_id, vendor_id, name, description, rental_fee) VALUES ('SH001', 'M001', 'V012', 'Wonderful Mart', 'Convenience Store', 1200);
 INSERT INTO SHOP(stall_id, manager_id, vendor_id, name, description, rental_fee) VALUES ('SH002', 'M001', 'V015', 'He & She Cafe', 'Coffee Shop', 1050);
+
+-- DML Query
+
+-- To check special room availability for venue booking
+-- Integrity checking
+SELECT SPECIALROOM_ID, SPECIALROOM_NAME, SPECIALROOM_CAPACITY
+FROM SPECIAL_ROOM
+WHERE SPECIALROOM_CAPACITY >= 60 AND SPECIALROOM_ID NOT IN (
+    SELECT SPECIALROOM_ID
+    FROM VENUE_BOOKING 
+    WHERE (START_DATE_TIME >= '26-NOV-2022 12:00:00' AND START_DATE_TIME <= '26-NOV-2022 14:00:00') OR
+    (END_DATE_TIME >= '26-NOV-2022 12:00:00' AND END_DATE_TIME <= '26-NOV-2022 14:00:00') OR
+    (START_DATE_TIME <= '26-NOV-2022 12:00:00' AND END_DATE_TIME >= '26-NOV-2022 14:00:00')
+);
