@@ -603,6 +603,41 @@ INSERT INTO SHOP(stall_id, manager_id, vendor_id, name, description, rental_fee)
 INSERT INTO SHOP(stall_id, manager_id, vendor_id, name, description, rental_fee) VALUES ('SH002', 'M001', 'V015', 'He & She Cafe', 'Coffee Shop', 1050);
 
 -- DML Query
+-- To decide the number of new water dispensers to buy(to replace the malfunctioning ones) and where they should be placed
+    -- To update the status of water dispensers which are malfunctioning
+    UPDATE WATER_DISPENSER
+    SET CONDITION = 0
+    WHERE DISPENSER_ID IN (2,5);
+    
+    -- To delete the malfunctioning water dispenser
+    DELETE FROM WATER_DISPENSER
+    WHERE CONDITION = 0;
+    
+    -- To recalculate the functioned water dispensers available in each block
+    SELECT COUNT(DISPENSER_ID) AS REMAINING_DISPENSER, BLOCK_ID
+    FROM WATER_DISPENSER
+    GROUP BY BLOCK_ID
+    ORDER BY COUNT(DISPENSER_ID);
+
+-- To calculate the revenue gained from each type of vendor (stalls, shops, vending machine) and total revenue gained from all the vendors.
+SELECT 
+    'STALLS' as REVENUE_TYPE, SUM(STALL.RENTAL_FEE) as REVENUE
+FROM 
+    STALL
+UNION
+SELECT 
+    'SHOPS' as REVENUE_TYPE, SUM(SHOP.RENTAL_FEE) as REVENUE
+FROM 
+    SHOP
+UNION
+SELECT 
+    'VENDING MACHINES' as REVENUE_TYPE, SUM(VENDING_MACHINE.PLACEMENT_FEE) as REVENUE
+FROM VENDING_MACHINE
+UNION
+SELECT 'TOTAL' as REVENUE_TYPE,
+(SELECT SUM(RENTAL_FEE) FROM STALL) + (SELECT SUM(RENTAL_FEE) FROM SHOP) + (SELECT SUM(PLACEMENT_FEE) FROM VENDING_MACHINE)  AS REVENUE
+FROM DUAL
+ORDER BY REVENUE;
 
 -- To check special room availability for venue booking
 -- Integrity checking
@@ -615,3 +650,4 @@ WHERE SPECIALROOM_CAPACITY >= 60 AND SPECIALROOM_ID NOT IN (
     (END_DATE_TIME >= '26-NOV-2022 12:00:00' AND END_DATE_TIME <= '26-NOV-2022 14:00:00') OR
     (START_DATE_TIME <= '26-NOV-2022 12:00:00' AND END_DATE_TIME >= '26-NOV-2022 14:00:00')
 );
+
